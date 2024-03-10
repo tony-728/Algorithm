@@ -29,6 +29,7 @@ public class problem17163 {
      * 
      * 10 x 10 종이를
      * 5x5, 4x4, 3x3, 2x2, 1x1
+     * -> 그리디한 방법으로는 예외상황이 발생한다. ex) 6x6
      *
      * DFS + 백트래킹
      * 위에서 아래로, 왼쪽에서 오른쪽으로 가며 탐색할 경우, 1이 적힌 칸을 만났을 시 항상 해당 점을 왼쪽 위 꼭짓점으로 하는 색종이를 붙여야
@@ -44,66 +45,40 @@ public class problem17163 {
     static final int MAP_SIZE = 10;
     static final int NUM_OF_COLOR = 5;
     static final int[][] MAP = new int[MAP_SIZE][MAP_SIZE];
-    static int[][] copiedMap = new int[MAP_SIZE][MAP_SIZE];
 
     static final int BLANK = 0;
     static final int WALL = 1;
 
-    static int answer = Integer.MAX_VALUE;
-    static int result = 0;
+    static int answer;
 
-    static int totalWallCount = 0;
-    static int tempWallCount = 0;
-
-    static int[] colorPaperList = { 5, 4, 3, 2, 1 };
-    static int[] colorPaperCountList = { 5, 5, 5, 5, 5 };
-
-    static int[] selectList;
-    static boolean[] usedElementList;
+    static int[] colorPaperCountList = { 0, 5, 5, 5, 5, 5 };
 
     public static void inputTestCase() throws IOException {
-
-        selectList = new int[NUM_OF_COLOR];
-        usedElementList = new boolean[NUM_OF_COLOR];
+        answer = Integer.MAX_VALUE;
 
         // 영역을 입력 받는다.
         for (int rowIdx = 0; rowIdx < MAP_SIZE; rowIdx++) {
             st = new StringTokenizer(br.readLine().trim());
             for (int colIdx = 0; colIdx < MAP_SIZE; colIdx++) {
                 MAP[rowIdx][colIdx] = Integer.parseInt(st.nextToken());
-
-                // 벽의 개수 카운팅
-                if (MAP[rowIdx][colIdx] == WALL) {
-                    totalWallCount++;
-                }
             }
         }
 
     }
 
-    public static void copyMap() {
+    // rowIdx, colIdx를 시작으로 length만큼의 영역이 WALL로 채워져 있는지 확인한다.
+    public static boolean isAttach(int rowIdx, int colIdx, int length) {
 
-        for (int rowIdx = 0; rowIdx < MAP_SIZE; rowIdx++) {
-            for (int colIdx = 0; colIdx < MAP_SIZE; colIdx++) {
-                copiedMap[rowIdx][colIdx] = MAP[rowIdx][colIdx];
-            }
-
+        // 영역을 벗어나거나
+        // 남은 색종이의 개수가 없을 때
+        // 붙일 수 없다.
+        if (rowIdx + length > MAP_SIZE || colIdx + length > MAP_SIZE || colorPaperCountList[length] <= 0) {
+            return false;
         }
 
-    }
-
-    public static boolean isAvailable(int startRowIdx, int startColIdx, int colorMapSize) {
-
-        for (int rowIdx = startRowIdx; rowIdx < startRowIdx + colorMapSize; rowIdx++) {
-            for (int colIdx = startColIdx; colIdx < startColIdx + colorMapSize; colIdx++) {
-
-                // 영역 확인
-                if (0 > rowIdx || rowIdx >= MAP_SIZE || 0 > colIdx || colIdx >= MAP_SIZE) {
-                    return false;
-                }
-
-                // 빈칸이 있으면 안된다.
-                if (copiedMap[rowIdx][colIdx] == BLANK) {
+        for (int startRowIdx = rowIdx; startRowIdx < rowIdx + length; startRowIdx++) {
+            for (int startColIdx = colIdx; startColIdx < colIdx + length; startColIdx++) {
+                if (MAP[startRowIdx][startColIdx] == BLANK) {
                     return false;
                 }
             }
@@ -112,79 +87,56 @@ public class problem17163 {
         return true;
     }
 
-    public static void setColorPaper(int startRowIdx, int startColIdx, int colorMapSize) {
-
-        for (int rowIdx = startRowIdx; rowIdx < startRowIdx + colorMapSize; rowIdx++) {
-            for (int colIdx = startColIdx; colIdx < startColIdx + colorMapSize; colIdx++) {
-
-                copiedMap[rowIdx][colIdx] = BLANK;
+    // rowIdx, colIdx를 시작으로 length만큼 status로 채운다.
+    public static void fill(int rowIdx, int colIdx, int length, int status) {
+        for (int startRowIdx = rowIdx; startRowIdx < rowIdx + length; startRowIdx++) {
+            for (int startColIdx = colIdx; startColIdx < colIdx + length; startColIdx++) {
+                MAP[startRowIdx][startColIdx] = status;
             }
+        }
+
+        // status에 따라서 남은 색종이의 개수를 갱신
+        if (status == BLANK) {
+            colorPaperCountList[length]--;
+        } else {
+            colorPaperCountList[length]++;
         }
     }
 
-    public static void checkSection(int index) {
+    public static void checkPaper(int rowIdx, int colIdx, int count) {
 
-        // 영역을 돌면서 색종이 영역에 해당하는 곳이 모두 1로 되어 있는지 확인한다.
-        for (int rowIdx = 0; rowIdx < MAP_SIZE; rowIdx++) {
-            for (int colIdx = 0; colIdx < MAP_SIZE; colIdx++) {
-
-                // 빈칸이면 넘어간다.
-                if (copiedMap[rowIdx][colIdx] == BLANK) {
-                    continue;
-                }
-
-                // 선택된 색종이 영역만큼 1로 되어 있는지 확인한다. && 선택된 색종이의 남은 개수가 0개 이상이어야 한다.
-                // 영역이 모두 1로 되어 있으면 0으로 방문처리
-                // 색종이 영역 카운트 -1
-                // 전체 사용 색종이 카운트 +1
-                if (isAvailable(rowIdx, colIdx, colorPaperList[index]) && colorPaperCountList[index] > 0) {
-                    setColorPaper(rowIdx, colIdx, colorPaperList[index]);
-
-                    // 해당 영역 색종이 개수 줄여주기
-                    colorPaperCountList[index]--;
-
-                    // 전체 벽 갯수 덮은 영역만큼 줄여주기
-                    tempWallCount -= (colorPaperList[index] * colorPaperList[index]);
-
-                    // 사용한 색종이 카운트 증가
-                    result++;
-                }
-            }
-        }
-    }
-
-    public static void selectColorPaper(int selectIdx) {
-
-        if (selectIdx == NUM_OF_COLOR) {
-            result = 0;
-            tempWallCount = totalWallCount;
-
-            colorPaperCountList = new int[] { 5, 5, 5, 5, 5 };
-            copyMap();
-
-            for (int idx = 0; idx < NUM_OF_COLOR; idx++) {
-                checkSection(selectList[idx]);
-            }
-
-            // 모든 블록을 처리했을 때 정답을 갱신한다.
-            if (tempWallCount == 0) {
-                answer = Math.min(answer, result);
-            }
-
+        // 종료 조건
+        if (rowIdx == MAP_SIZE - 1 && colIdx >= MAP_SIZE) {
+            answer = Math.min(answer, count);
             return;
         }
 
-        for (int elementIdx = 0; elementIdx < NUM_OF_COLOR; elementIdx++) {
+        // 조기 조건
+        if (count >= answer) {
+            return;
+        }
 
-            if (usedElementList[elementIdx]) {
-                continue;
+        // 현재 행을 모두 확인함
+        // 다음 행을 확인할 수 있도록 재귀호출
+        if (colIdx == MAP_SIZE) {
+            checkPaper(rowIdx + 1, 0, count);
+            return;
+        }
+
+        if (MAP[rowIdx][colIdx] == WALL) {
+            for (int length = 5; length > 0; length--) {
+                // 5칸짜리 색종이부터 1칸짜리 색종이까지 붙일 수 있는지 확인한다.
+                if (isAttach(rowIdx, colIdx, length)) {
+                    // 색종이를 붙이므로 영역을 BLANK 처리
+                    fill(rowIdx, colIdx, length, 0);
+                    checkPaper(rowIdx, colIdx + length, count + 1);
+                    // 탐색 후 돌아왔으므로 영역을 WALL로 처리
+                    fill(rowIdx, colIdx, length, 1);
+                }
             }
-            usedElementList[elementIdx] = true;
-            selectList[selectIdx] = elementIdx;
-            selectColorPaper(selectIdx + 1);
 
-            usedElementList[elementIdx] = false;
-
+        } else {
+            checkPaper(rowIdx, colIdx + 1, count);
         }
 
     }
@@ -193,7 +145,7 @@ public class problem17163 {
 
         inputTestCase();
 
-        selectColorPaper(0);
+        checkPaper(0, 0, 0);
 
         System.out.println(answer == Integer.MAX_VALUE ? -1 : answer);
     }
