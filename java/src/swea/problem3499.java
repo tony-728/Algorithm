@@ -22,6 +22,7 @@ public class problem3499 {
      * 
      * 카드 뭉치를 반으로 나눈다.
      * 두개로 나누어진 문자열 배열을 순서대로 꺼내와서 정답배열에 넣는다.
+     * - 인덱스로 카드 뭉치를 나누어 접근한다.
      * 
      */
 
@@ -51,9 +52,6 @@ public class problem3499 {
     }
 
     public static void perfectSuffle() {
-
-        // 카드 갯수가 홀수일 때
-
         int answerIdx = 0;
 
         int deckIdx = 0;
