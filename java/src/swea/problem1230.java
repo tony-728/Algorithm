@@ -30,7 +30,7 @@ public class problem1230 {
     static StringTokenizer st;
     static StringBuilder sb = new StringBuilder();
 
-    static final int testCase = 1;
+    static final int testCase = 10;
 
     static int numOfCipher;
     static List<String> cipherStringList;
