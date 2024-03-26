@@ -22,7 +22,7 @@ public class problem4485 {
      * 0이 입력으로 들어오면 종료된다.
      * 
      * 
-     * BFS로 비용이 작을 때만 비용을 갱신해나가면서 목적지까지 진행한다.
+     * BFS + 다익스트라로 비용이 작을 때만 비용을 갱신해나가면서 목적지까지 진행한다.
      * 
      */
 
@@ -80,6 +80,7 @@ public class problem4485 {
                 continue;
             }
 
+            // 4방 확인
             for (int dir = 0; dir < deltaX.length; dir++) {
 
                 int newRowIdx = currentNode.rowIdx + deltaX[dir];
@@ -90,8 +91,10 @@ public class problem4485 {
                     continue;
                 }
 
+                // 새로 구한 비용
                 int newCost = costMap[currentNode.rowIdx][currentNode.colIdx] + cave[newRowIdx][newColIdx];
 
+                // 다음 위치에 저장된 비용과 새로 구한 비용을 비교
                 if (costMap[newRowIdx][newColIdx] > newCost) {
                     costMap[newRowIdx][newColIdx] = newCost;
                     pQueue.offer(new Node(newRowIdx, newColIdx, newCost));
