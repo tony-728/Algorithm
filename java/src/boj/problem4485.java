@@ -73,11 +73,9 @@ public class problem4485 {
 
             Node currentNode = pQueue.poll();
 
-            int cost = currentNode.cost;
-
-            // 현재 노드의 비용보다 맵에 기록된 비용이 더 작은 경우 갱신하지 않는다.
-            if (cost > costMap[currentNode.rowIdx][currentNode.colIdx]) {
-                continue;
+            // 가장 먼저 도착점에 왔을 때가 최소비용이다.
+            if (currentNode.rowIdx == size - 1 && currentNode.colIdx == size - 1) {
+                return;
             }
 
             // 4방 확인
