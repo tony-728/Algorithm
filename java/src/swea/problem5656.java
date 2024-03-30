@@ -33,12 +33,12 @@ public class problem5656 {
      * 
      */
 
-    static class Location {
+    static class Block {
         int rowIdx;
         int colIdx;
         int power;
 
-        public Location(int rowIdx, int colIdx, int power) {
+        public Block(int rowIdx, int colIdx, int power) {
             this.rowIdx = rowIdx;
             this.colIdx = colIdx;
             this.power = power;
@@ -142,14 +142,14 @@ public class problem5656 {
 
         int count = 0;
 
-        Deque<Location> queue = new ArrayDeque<>();
+        Deque<Block> queue = new ArrayDeque<>();
 
         // 해당 열에 벽돌이 있는지 미리 확인했으므로 벽돌을 만날때까지 돌을 던지면 된다.
         // 처음 벽돌을 만나면 위치를 큐에 저장후 반복문 탈출
         for (int rowIdx = 0; rowIdx < height; rowIdx++) {
 
             if (map[rowIdx][checkColIdx] != BLANK) {
-                queue.offer(new Location(rowIdx, checkColIdx, map[rowIdx][checkColIdx]));
+                queue.offer(new Block(rowIdx, checkColIdx, map[rowIdx][checkColIdx]));
                 map[rowIdx][checkColIdx] = BLANK;
                 count++;
                 break;
@@ -159,7 +159,7 @@ public class problem5656 {
         // 벽돌 부시기
         while (!queue.isEmpty()) {
 
-            Location currentLoc = queue.poll();
+            Block currentLoc = queue.poll();
 
             int newRowIdx = currentLoc.rowIdx;
             int newColIdx = currentLoc.colIdx;
@@ -182,7 +182,7 @@ public class problem5656 {
 
                     if (map[newRowIdx][newColIdx] != BLANK) {
                         // 영향을 받은 블록 큐에 넣기
-                        queue.offer(new Location(newRowIdx, newColIdx, map[newRowIdx][newColIdx]));
+                        queue.offer(new Block(newRowIdx, newColIdx, map[newRowIdx][newColIdx]));
 
                         map[newRowIdx][newColIdx] = BLANK;
                         count++;
@@ -200,25 +200,25 @@ public class problem5656 {
     public static void downBlock() {
 
         for (int colIdx = 0; colIdx < width; colIdx++) {
-            Deque<Location> queue = new ArrayDeque<>();
+            Deque<Block> queue = new ArrayDeque<>();
 
             for (int rowIdx = height - 1; rowIdx > -1; rowIdx--) {
 
                 // 빈칸을 찾았으면 위치를 저장한다.
                 if (map[rowIdx][colIdx] == BLANK) {
-                    queue.offer(new Location(rowIdx, colIdx, map[rowIdx][colIdx]));
+                    queue.offer(new Block(rowIdx, colIdx, map[rowIdx][colIdx]));
                 } else {
 
                     // 미리 찾은 빈칸이 있는 경우
                     if (!queue.isEmpty()) {
-                        Location blanckLoc = queue.poll();
+                        Block blanckLoc = queue.poll();
 
                         // 빈칸과 자리 스위칭
                         map[blanckLoc.rowIdx][blanckLoc.colIdx] = map[rowIdx][colIdx];
                         map[rowIdx][colIdx] = blanckLoc.power;
 
                         // 자리를 스위칭한 곳에 다시 0이 생겼으므로 그 자리를 큐에 넣는다.
-                        queue.offer(new Location(rowIdx, colIdx, map[rowIdx][colIdx]));
+                        queue.offer(new Block(rowIdx, colIdx, map[rowIdx][colIdx]));
                     }
                 }
             }
