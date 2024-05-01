@@ -242,111 +242,74 @@ public class problem1938 {
 					// 기차가 세로인지 가로인지 확인
 
 					boolean rotationFlag = true;
+					int startRowIdx = 0;
+					int startColIdx = 0;
 
 					// 행이 같다는 것은 가로
 					if (first.rowIdx == last.rowIdx) {
+						startRowIdx = first.rowIdx - 1;
+						startColIdx = first.colIdx;
 
-						int startRowIdx = first.rowIdx - 1;
-						int startColIdx = first.colIdx;
-
-						for (int rowIdx = 0; rowIdx < LENGTH; rowIdx++) {
-							for (int colIdx = 0; colIdx < LENGTH; colIdx++) {
-
-								int newRowIdx = startRowIdx + rowIdx;
-								int newColIdx = startColIdx + colIdx;
-
-								// 범위 확인
-								if (newRowIdx < 0 || newRowIdx >= mapSize || newColIdx < 0 || newColIdx >= mapSize) {
-									rotationFlag = false;
-									break;
-								}
-
-								// 장애물이 있는지 확인
-								if (map[newRowIdx][newColIdx] == WALL) {
-									rotationFlag = false;
-									break;
-								}
-							}
-						}
-
-						if (rotationFlag) {
-							// 회전하기
-							Location newFirst = new Location(first.rowIdx - 1, center.colIdx);
-							Location newLast = new Location(last.rowIdx + 1, center.colIdx);
-
-							newTrain.setLocation(newFirst, 0);
-							newTrain.setLocation(center, 1);
-							newTrain.setLocation(newLast, 2);
-
-							newTrain.setCost(train.cost + 1);
-
-							// 방문확인
-							if (checkVisited(newTrain)) {
-								continue;
-							}
-
-							status = newTrain.getStatus();
-
-							for (int idx = 0; idx < LENGTH; idx++) {
-								Location location = newTrain.locList[idx];
-								visited[location.rowIdx][location.colIdx][1 << status] = true;
-							}
-
-							queue.offer(newTrain);
-
-						}
-
-						// 행이 다르다는 것은 세로
+						// 열이 같다는 것은 세로
 					} else if (first.colIdx == last.colIdx) {
-						int startRowIdx = first.rowIdx;
-						int startColIdx = first.colIdx - 1;
+						startRowIdx = first.rowIdx;
+						startColIdx = first.colIdx - 1;
+					}
 
-						outLoop: for (int rowIdx = 0; rowIdx < LENGTH; rowIdx++) {
-							for (int colIdx = 0; colIdx < LENGTH; colIdx++) {
+					outLoop: for (int rowIdx = 0; rowIdx < LENGTH; rowIdx++) {
+						for (int colIdx = 0; colIdx < LENGTH; colIdx++) {
 
-								int newRowIdx = startRowIdx + rowIdx;
-								int newColIdx = startColIdx + colIdx;
+							int newRowIdx = startRowIdx + rowIdx;
+							int newColIdx = startColIdx + colIdx;
 
-								// 범위 확인
-								if (newRowIdx < 0 || newRowIdx >= mapSize || newColIdx < 0 || newColIdx >= mapSize) {
-									rotationFlag = false;
-									break outLoop;
-								}
+							// 범위 확인
+							if (newRowIdx < 0 || newRowIdx >= mapSize || newColIdx < 0 || newColIdx >= mapSize) {
+								rotationFlag = false;
+								break outLoop;
+							}
 
-								// 장애물이 있는지 확인
-								if (map[newRowIdx][newColIdx] == WALL) {
-									rotationFlag = false;
-									break outLoop;
-								}
+							// 장애물이 있는지 확인
+							if (map[newRowIdx][newColIdx] == WALL) {
+								rotationFlag = false;
+								break outLoop;
 							}
 						}
+					}
 
-						if (rotationFlag) {
-							// 회전하기
-							Location newFirst = new Location(center.rowIdx, first.colIdx - 1);
-							Location newLast = new Location(center.rowIdx, last.colIdx + 1);
-
-							newTrain.setLocation(newFirst, 0);
-							newTrain.setLocation(center, 1);
-							newTrain.setLocation(newLast, 2);
-
-							newTrain.setCost(train.cost + 1);
-
-							// 방문확인
-							if (checkVisited(newTrain)) {
-								continue;
-							}
-
-							status = newTrain.getStatus();
-
-							for (int idx = 0; idx < LENGTH; idx++) {
-								Location location = newTrain.locList[idx];
-								visited[location.rowIdx][location.colIdx][1 << status] = true;
-							}
-
-							queue.offer(newTrain);
+					if (rotationFlag) {
+						// 회전하기
+						Location newFirst = null;
+						Location newLast = null;
+						// 가로일 때
+						if (first.rowIdx == last.rowIdx) {
+							newFirst = new Location(first.rowIdx - 1, center.colIdx);
+							newLast = new Location(last.rowIdx + 1, center.colIdx);
+							// 세로일 떄
+						} else if (first.colIdx == last.colIdx) {
+							newFirst = new Location(center.rowIdx, first.colIdx - 1);
+							newLast = new Location(center.rowIdx, last.colIdx + 1);
 
 						}
+
+						newTrain.setLocation(newFirst, 0);
+						newTrain.setLocation(center, 1);
+						newTrain.setLocation(newLast, 2);
+
+						newTrain.setCost(train.cost + 1);
+
+						// 방문확인
+						if (checkVisited(newTrain)) {
+							continue;
+						}
+
+						status = newTrain.getStatus();
+
+						for (int idx = 0; idx < LENGTH; idx++) {
+							Location location = newTrain.locList[idx];
+							visited[location.rowIdx][location.colIdx][1 << status] = true;
+						}
+
+						queue.offer(newTrain);
 					}
 
 				} else {
@@ -406,6 +369,7 @@ public class problem1938 {
 				}
 			}
 		}
+
 	}
 
 	public static void main(String[] args) throws IOException {
