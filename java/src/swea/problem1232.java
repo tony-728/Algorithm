@@ -18,7 +18,7 @@ public class problem1232 {
      * 
      */
 
-    static int testCase = 1;
+    static int testCase = 10;
 
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
@@ -33,10 +33,6 @@ public class problem1232 {
 
         tree = new String[numOfNode + 1]; // 루트 정점은 1부터이기 때문
         parentsTree = new int[numOfNode + 1];
-
-        for (int idx = 0; idx < numOfNode; idx++) {
-            parentsTree[idx] = 1;
-        }
 
         for (int idx = 0; idx < numOfNode; idx++) {
             st = new StringTokenizer(br.readLine().trim());
