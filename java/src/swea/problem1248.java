@@ -137,7 +137,6 @@ public class problem1248 {
             }
 
             countSubTree(answer);
-
             sb.append(String.format("#%d %d %d\n", tc, answer, count));
         }
         System.out.println(sb);
