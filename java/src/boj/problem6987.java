@@ -33,23 +33,68 @@ public class problem6987 {
      * 
      */
 
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    public static StringTokenizer st;
-    public static StringBuilder sb = new StringBuilder();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
+    static StringBuilder sb = new StringBuilder();
 
-    public static final int TEST_CASE = 4;
-    public static final int MAX_TEAM_COUNT = 6;
-    public static final int TOTAL_PLAY_COUNT = 15;
+    static final int TEST_CASE = 4;
+    static final int TOTAL_TEAM_COUNT = 6;
+    static final int TOTAL_PLAY_COUNT = 15;
+    static final int LEFT_TIME = 0;
+    static final int RIGHT_TEAM = 1;
 
-    public static int answer;
+    static int answer;
 
-    public static int[][] matches = new int[TOTAL_PLAY_COUNT][2]; // 총경기수, 경기참여나라(한 경기는 두 나라)
-    public static int[][] results;
+    static int[][] matches = new int[TOTAL_PLAY_COUNT][2]; // 총경기수, 경기참여나라(한 경기는 두 나라가 한다.)
+    static int[][] results;
 
-    public static boolean isPossible; // 입력 결과가 합당한지 확인
-    public static boolean FiveMatchCheck; // 각 나라가 5번에 경기를 하는지 확인
+    static boolean isPossible; // 입력 결과가 합당한지 확인
+    static boolean fiveMatchCheck; // 각 나라가 5번에 경기를 하는지 확인
 
-    public static void checkMatch(int count) {
+    static void inputTestCase() throws IOException {
+        // 경기 결과를 저장
+        // 승무패 순서
+        results = new int[3][TOTAL_TEAM_COUNT];
+
+        isPossible = false;
+        fiveMatchCheck = true;
+
+        // 경기 결과 입력
+        st = new StringTokenizer(br.readLine().trim());
+
+        for (int teamIdx = 0; teamIdx < TOTAL_TEAM_COUNT; teamIdx++) {
+            int winCount = Integer.parseInt(st.nextToken());
+            int tieCount = Integer.parseInt(st.nextToken());
+            int loseCount = Integer.parseInt(st.nextToken());
+
+            results[0][teamIdx] = winCount;
+            results[1][teamIdx] = tieCount;
+            results[2][teamIdx] = loseCount;
+
+            // 기본적으로 5경기가 되는지 확인
+            if (winCount + tieCount + loseCount != 5) {
+                fiveMatchCheck = false;
+            }
+        }
+    }
+
+    static void initMatch() {
+        // 확인할 매칭 만들기
+        // 모든 나라는 5번에 경기를 하기 때문에 미리 매칭을 만들어도 됨
+        int matchIdx = 0;
+        for (int leftTeamIdx = 0; leftTeamIdx < TOTAL_TEAM_COUNT - 1; leftTeamIdx++) {
+            for (int rightTeamIdx =
+                    leftTeamIdx + 1; rightTeamIdx < TOTAL_TEAM_COUNT; rightTeamIdx++) {
+                matches[matchIdx][0] = leftTeamIdx;
+                matches[matchIdx][1] = rightTeamIdx;
+
+                matchIdx++;
+            }
+        }
+    }
+
+
+    static void checkMatch(int count) {
 
         // 이미 경기가 합당한지 확인이 완료됨
         if (isPossible)
@@ -61,8 +106,8 @@ public class problem6987 {
             return;
         }
 
-        int leftTeam = matches[count][0];
-        int rightTeam = matches[count][1];
+        int leftTeam = matches[count][LEFT_TIME];
+        int rightTeam = matches[count][RIGHT_TEAM];
 
         // 각 결과에 승, 무, 패가 남아 있어야 함
         // 승 : 패
@@ -100,54 +145,22 @@ public class problem6987 {
     }
 
     public static void main(String[] args) throws IOException {
-        // 확인할 매칭 만들기
-        // 모든 나라는 5번에 경기를 하기 때문에 미리 매칭을 만들어도 됨
-        int matchIdx = 0;
-        for (int leftTeamIdx = 0; leftTeamIdx < MAX_TEAM_COUNT - 1; leftTeamIdx++) {
-            for (int rightTeamIdx = leftTeamIdx + 1; rightTeamIdx < MAX_TEAM_COUNT; rightTeamIdx++) {
-                matches[matchIdx][0] = leftTeamIdx;
-                matches[matchIdx][1] = rightTeamIdx;
-
-                matchIdx++;
-            }
-        }
+        initMatch();
 
         for (int tc = 0; tc < TEST_CASE; tc++) {
-            // 경기 결과를 저장
-            // 승무패 순서
-            results = new int[3][MAX_TEAM_COUNT];
+            inputTestCase();
 
-            isPossible = false;
-            FiveMatchCheck = true;
-
-            st = new StringTokenizer(br.readLine().trim());
-
-            for (int teamIdx = 0; teamIdx < MAX_TEAM_COUNT; teamIdx++) {
-                int winCount = Integer.parseInt(st.nextToken());
-                int tieCount = Integer.parseInt(st.nextToken());
-                int loseCount = Integer.parseInt(st.nextToken());
-
-                results[0][teamIdx] = winCount;
-                results[1][teamIdx] = tieCount;
-                results[2][teamIdx] = loseCount;
-
-                // 기본적으로 5경기가 되는지 확인
-                if (winCount + tieCount + loseCount != 5) {
-                    FiveMatchCheck = false;
-                }
-            }
-
-            if (FiveMatchCheck) {
+            if (fiveMatchCheck) {
                 checkMatch(0);
             }
 
-            if (isPossible)
+            if (isPossible) {
                 answer = 1;
-            else if (!isPossible || !FiveMatchCheck)
+            } else if (!isPossible || !fiveMatchCheck) {
                 answer = 0;
+            }
 
             sb.append(answer).append(" ");
-
         }
 
         System.out.println(sb);
