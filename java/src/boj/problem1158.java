@@ -15,9 +15,9 @@ public class problem1158 {
      * 
      */
 
-    public static BufferedReader br;
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     public static StringTokenizer st;
-    public static StringBuilder sb;
+    public static StringBuilder sb = new StringBuilder();
 
     public static int elementCount;
     public static int outCount;
@@ -25,22 +25,22 @@ public class problem1158 {
     public static int index;
     public static List<Integer> elementList;
 
-    public static void main(String[] args) throws IOException {
-        br = new BufferedReader(new InputStreamReader(System.in));
-        elementList = new LinkedList<>();
-
+    static void inputTestCase() throws IOException {
         st = new StringTokenizer(br.readLine().trim());
 
         elementCount = Integer.parseInt(st.nextToken());
         outCount = Integer.parseInt(st.nextToken());
 
+        elementList = new LinkedList<>();
+
         for (int idx = 1; idx <= elementCount; idx++) {
             elementList.add(idx);
         }
 
-        sb = new StringBuilder();
         sb.append("<");
+    }
 
+    static void makeList() {
         count = 0;
         index = 0;
         // 한사람이 남을 때까지 진행한다.
@@ -62,6 +62,11 @@ public class problem1158 {
             }
         }
         sb.append(elementList.get(0)).append(">");
+    }
+
+    public static void main(String[] args) throws IOException {
+        inputTestCase();
+        makeList();
 
         System.out.println(sb);
     }
