@@ -29,36 +29,25 @@ public class problem1309 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static final int STANDARD = 9901;
 
-    static final int UP = 0;
-    static final int DOWN = 1;
-    static final int EMPTY = 2;
+    static final int EXIST = 0;
+    static final int EMPTY = 1;
 
     static int cageSize;
     static int answer;
 
     static void solution() {
 
-        int[][] dp = new int[3][cageSize + 1];
+        int[][] dp = new int[2][cageSize + 1];
 
-        dp[UP][1] = 1;
-        dp[DOWN][1] = 1;
+        dp[EXIST][1] = 1;
         dp[EMPTY][1] = 1;
 
         for (int idx = 2; idx < cageSize + 1; idx++) {
-            for (int locIdx = 0; locIdx < 3; locIdx++) {
-
-                if (locIdx == UP) {
-                    dp[locIdx][idx] = (dp[DOWN][idx - 1] + dp[EMPTY][idx - 1]) % STANDARD;
-                } else if (locIdx == DOWN) {
-                    dp[locIdx][idx] = (dp[UP][idx - 1] + dp[EMPTY][idx - 1]) % STANDARD;
-                } else {
-                    dp[locIdx][idx] =
-                            (dp[UP][idx - 1] + dp[DOWN][idx - 1] + dp[EMPTY][idx - 1]) % STANDARD;
-                }
-            }
+            dp[EXIST][idx] = (dp[EXIST][idx - 1] + dp[EMPTY][idx - 1]) % STANDARD;
+            dp[EMPTY][idx] = (dp[EXIST][idx - 1] * 2 + dp[EMPTY][idx - 1]) % STANDARD;
         }
 
-        answer = (dp[UP][cageSize] + dp[DOWN][cageSize] + dp[EMPTY][cageSize]) % STANDARD;
+        answer = (dp[EXIST][cageSize] * 2 + dp[EMPTY][cageSize]) % STANDARD;
     }
 
     public static void main(String[] args) throws IOException {
