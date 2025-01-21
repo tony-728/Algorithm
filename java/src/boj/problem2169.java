@@ -60,7 +60,7 @@ public class problem2169 {
         // dp 배열 초기화
         for (int rowIdx = 0; rowIdx <= rowSize; rowIdx++) {
             for (int colIdx = 0; colIdx <= colSize + 1; colIdx++) {
-                // dp 값 초기화를 -101로 하면 안된다. 할꺼면 -202 이상
+                // dp 값 초기화를 -101로 하면 안된다. 할꺼면 -100 * 1000 -1 이하
                 dp[rowIdx][colIdx][0] = -987654321;
                 dp[rowIdx][colIdx][1] = -987654321;
             }
