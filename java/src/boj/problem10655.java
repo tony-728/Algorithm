@@ -62,8 +62,7 @@ public class problem10655 {
             }
 
             // 전처리, 체크포인트 거리의 누적합
-            int distance = Math.abs(row - checkPointList[idx - 1].rowIdx)
-                    + Math.abs(col - checkPointList[idx - 1].colIdx);
+            int distance = getDistance(checkPointList[idx - 1], checkPointList[idx]);
 
             sumList[idx] = sumList[idx - 1] + distance;
         }
