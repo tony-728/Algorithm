@@ -32,8 +32,6 @@ public class problem1654 {
     static int[] arrOfLAN;
     static long answer;
 
-    static double sum;
-
     static void inputData() throws IOException {
         answer = 0;
 
@@ -46,8 +44,9 @@ public class problem1654 {
 
         for (int idx = 0; idx < numOfLAN; idx++) {
             arrOfLAN[idx] = Integer.parseInt(br.readLine().trim());
-            sum += arrOfLAN[idx];
         }
+
+        Arrays.sort(arrOfLAN);
     }
 
     static void solution() {
@@ -56,17 +55,17 @@ public class problem1654 {
         // 답이 될 수도 있다.
         // 10, 10, 100 이 주어졌을 때 8개를 만들려고 하면 12가 최대 랜선의 길이
 
-        // (모든 랜선의 길이를 더한 값 / 목표 랜선 개수) x 부터 1까지 모든 값을 확인
+        // 랜선의 최대값 부터 1까지 모든 값을 확인
         // n^2 으로 시간 초과
 
         // nlogn으로 줄여야 함
         // 이진 탐색, 1부터 x 값 사이에 답이 존재한다. -> 이진탐색으로 답을 찾아간다.
 
-        long right = (long) (sum / target);
+        long right = arrOfLAN[numOfLAN - 1];
         long left = 1;
 
         while (left <= right) {
-
+            // long이어야 하는 이유 랜선의 최대값이 21억인데 1을 더하면 int 범위에서 오버플로우 발생
             long mid = (left + right) / 2;
 
             int count = 0;
