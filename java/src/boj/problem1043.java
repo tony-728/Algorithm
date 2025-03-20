@@ -19,7 +19,7 @@ public class problem1043 {
      * 사람과 파티의 최대는 50
      * 
      * 완탐
-     * 비트마스킹
+     * 비트마스킹으로도 가능하다
      * union-find
      */
 
@@ -39,11 +39,7 @@ public class problem1043 {
             return;
         }
 
-        if (parentLeft <= parentRight) {
-            arrOfParent[parentRight] = parentLeft;
-        } else {
-            arrOfParent[parentLeft] = parentRight;
-        }
+        arrOfParent[parentRight] = parentLeft;
     }
 
     static int find(int child) {
@@ -137,14 +133,99 @@ public class problem1043 {
                 if (party[idx][personIdx]) {
                     int parent = arrOfParent[personIdx];
 
-                    if(arrOfTruth[parent]){
+                    if (arrOfTruth[parent]) {
                         flag = false;
                         break;
                     }
                 }
             }
 
-            if(flag){
+            if (flag) {
+                answer++;
+            }
+        }
+
+    }
+
+    static void bitmasking() throws IOException {
+        answer = 0;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        st = new StringTokenizer(br.readLine().trim());
+
+        numOfPerson = Integer.parseInt(st.nextToken());
+        numOfParty = Integer.parseInt(st.nextToken());
+
+        // union-find를 위한 준비
+        arrOfParent = new int[numOfPerson + 1];
+        for (int idx = 0; idx <= numOfPerson; idx++) {
+            arrOfParent[idx] = idx;
+        }
+
+        st = new StringTokenizer(br.readLine().trim());
+
+        numOfTruth = Integer.parseInt(st.nextToken());
+
+        // 최초 비밀을 알고 있는 사람들
+        int[] truthList = new int[numOfTruth];
+        long truthBit = 0L;
+        if (numOfTruth != 0) {
+            for (int idx = 0; idx < numOfTruth; idx++) {
+                int truth = Integer.parseInt(st.nextToken());
+
+                truthBit = truthBit | (1L << truth);
+
+                truthList[idx] = truth;
+            }
+        }
+
+        long[] party = new long[numOfParty];
+
+        // 파티에 참여하는 사람
+        for (int idx = 0; idx < numOfParty; idx++) {
+
+            st = new StringTokenizer(br.readLine().trim());
+
+            // 파티에 참여하는 사람수
+            int total = Integer.parseInt(st.nextToken());
+
+            int std = -1;
+
+            for (int personIdx = 0; personIdx < total; personIdx++) {
+                int person = Integer.parseInt(st.nextToken());
+
+                // 파티에 참여하는 사람 체크
+                party[idx] = party[idx] | (1L << person);
+
+                if (std == -1) {
+                    std = person;
+                    continue;
+                }
+
+                // 비밀을 공유할 가능성이 있는 사람의 합집합 만들기
+                union(std, person);
+            }
+        }
+
+        // union-find한 결과를 최종 정리
+        for (int idx = 1; idx <= numOfPerson; idx++) {
+            find(idx);
+        }
+
+        // 진실을 알고 있는 사람들 최종 정리
+
+        // 최초 진실을 알고 있는 사람의 부모을 비트마스킹
+        for (Integer truth : truthList) {
+            truthBit = truthBit | (1L << arrOfParent[truth]);
+        }
+
+        // 파티 인원과 진실을 알고 있는 인원 중 겹치는 인원이 있는지 체크
+        for (int idx = 0; idx < numOfParty; idx++) {
+            if (!((party[idx] & truthBit) > 0)) {
+                // System.out.println("파티 " + idx + " 참가자 " + Long.toBinaryString(party[idx]) + " 진실 "
+                //         + Long.toBinaryString(truthBit));
                 answer++;
             }
         }
@@ -152,7 +233,9 @@ public class problem1043 {
     }
 
     public static void main(String[] args) throws IOException {
-        inputData();
+        // inputData();
+
+        bitmasking();
 
         System.out.println(answer);
     }
