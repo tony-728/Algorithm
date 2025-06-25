@@ -24,38 +24,6 @@ public class problem2504 {
 
     static int answer;
 
-    static void check(Deque<Character> stack, char value) {
-        int numValue = stack.pop() - '0';
-
-        if (stack.isEmpty()) {
-            stack.push((char) (numValue + '0'));
-            stack.push(value);
-            return;
-        }
-
-        if (stack.peek() == '(' && value == ')') {
-            stack.pop();
-            numValue *= 2;
-            if (!stack.isEmpty() && (stack.peek() - '0') > 0) {
-                int x = stack.pop() - '0';
-                stack.push((char) ((numValue + x) + '0'));
-            } else {
-                stack.push((char) (numValue + '0'));
-            }
-        }
-
-        if (stack.peek() == '[' && value == ']') {
-            stack.pop();
-            numValue *= 3;
-            if (!stack.isEmpty() && (stack.peek() - '0') > 0) {
-                int x = stack.pop() - '0';
-                stack.push((char) ((numValue + x) + '0'));
-            } else {
-                stack.push((char) (numValue + '0'));
-            }
-        }
-    }
-
     static void solution(String input) {
         answer = 0;
         int result = 1;
