@@ -35,7 +35,7 @@ public class problem11057 {
 
         int answer = 0;
         for (int idx = 0; idx < 10; idx++) {
-            answer += dp[n][idx];
+            answer = (answer + dp[n][idx]) % 10007;
         }
 
         System.out.println(answer);
